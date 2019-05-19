@@ -20,6 +20,10 @@
     {
       "name": "Create Nginx Proxy",
       "link": "/create-nginx-proxy"
+    },
+    {
+      "name": "Install Identity Server",
+      "link": "/install-identity-server"
     }
   ]
 }
