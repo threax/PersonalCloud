@@ -50,4 +50,8 @@
 <p>When this is done test your docker install by running the hello-world image.</p>
 <p><code>sudo docker run hello-world</code></p>
 <p><img height="472" src="/AutoUploads\b0abe76f-016b-4706-85e4-475bea385616.png" width="647" /></p>
+<p>Next put your docker server into swarm mode by running</p>
+<p><code>sudo docker swarm init</code></p>
+<p>Next&nbsp;you should create an overlay network called appnet. This is the network your individual docker containers will use to communicate with one another.</p>
+<p><code>sudo docker network create -d overlay --attachable appnet</code></p>
 <p>This completes the setup of the host server itself. From here on out we will be using docker images to manage the rest of the pieces of the infrastructure.</p>
