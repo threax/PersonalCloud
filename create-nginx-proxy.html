@@ -68,7 +68,8 @@
 <h2>Setup docker-compose.yml</h2>
 <p>Next create a file called docker-compose.yml and paste in the following contents:</p>
 <p><code>version: &quot;3.4&quot;</code></p>
-<p><code>services:
+<p>
+	<br /><code>services:
 	<br />&nbsp; app:
 	<br />&nbsp;&nbsp;&nbsp; image: nginx
 	<br />&nbsp;&nbsp;&nbsp; networks:
@@ -83,7 +84,8 @@
 	<br />&nbsp;&nbsp;&nbsp; ports:
 	<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - &quot;80:80&quot;
 	<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - &quot;443:443&quot;</code></p>
-<p><code>networks:
+<p>
+	<br /><code>networks:
 	<br />&nbsp; appnet:
 	<br />&nbsp;&nbsp;&nbsp; external: true</code></p>
 <p><code>secrets:
@@ -92,3 +94,10 @@
 	<br />&nbsp; private.pem:
 	<br />&nbsp;&nbsp;&nbsp; external: true</code></p>
 <p>This will setup the container to run the offical nginx image with the config file you just created.</p>
+<h2>Deploy Nginx Stack</h2>
+<p>Run the following command from inside your compose/nginx folder to deploy the stack.</p>
+<p><code>sudo docker stack deploy -c docker-compose.yml nginx</code></p>
+<p>You can verify that it is running by running</p>
+<p><code>sudo docker stack ls</code></p>
+<p><img height="106" src="/AutoUploads\6aa4c9da-4fc8-4c61-b6c9-5832a5b6ea79.png" width="823" /></p>
+<p>With this you have a nginx proxy that will connect to your apps by convention and that will encrypt the outgoing connections using the ssl certificate secrets you setup in the previous step.</p>
