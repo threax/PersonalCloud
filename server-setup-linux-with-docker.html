@@ -1,0 +1,42 @@
+<h1>Server Setup - Linux with Docker</h1>
+<p>This page describes how to setup your app server using Docker on Linux. This guide will use Ubuntu Server, but if you prefer another Linux flavor go ahead and use that. Some steps may be different if you choose to go that route.</p>
+<h2>Download and Install Ubuntu Server</h2>
+<p>Grab an <a href="https://www.ubuntu.com/#download">Ubuntu Server</a> and install it on your target PC. I reccomend going with the current LTS (Long Term Support) release.</p>
+<p><img height="679" src="/AutoUploads\2eca6bc9-ceea-4521-91cc-1eed3ff987b4.png" width="714" /></p>
+<p>Folllow through the installer. For the most part the default settings are ok.</p>
+<p><img height="506" src="/AutoUploads\3b717852-f2f9-4763-a148-5af094ea51d0.png" width="674" /></p>
+<p>Choose your language and&nbsp;keyboard settings and choose the plain Install Ubuntu option.</p>
+<p><img height="173" src="/AutoUploads\4fb42349-049d-4196-9c7c-8975777d2000.png" width="933" /></p>
+<p>Configure your network connection, it is probably enough to just choose Done.</p>
+<p>On the next page if you have a proxy configure that or just select Done.</p>
+<p>On the next page the default Ubuntu archive mirror should work, so choose Done to move on.</p>
+<p>Partition your disk to your preference. Choosing Use An Entire Disk is a good option. On the next page choose the disk you want to format. On the final Filesystem setup page choose Done and Continue in the popup screen to confirm the changes.</p>
+<p>On the next page enter your profile information. If you can&#39;t think of a server name use AppServer.</p>
+<p><img height="345" src="/AutoUploads\cadc60e9-5df7-4363-8ab8-8464999b8443.png" width="957" /></p>
+<p>On the next screen if you want to remotely access your server&nbsp;choose the option to Install OpenSSH server. Press spacebar to select this option then press down and choose Done.</p>
+<p><img height="276" src="/AutoUploads\767f7f90-e062-485f-88f0-61093a03135d.png" width="821" /></p>
+<p>On the Featured Server Snaps page don&#39;t install anything just select Done.</p>
+<p><img height="466" src="/AutoUploads\bcc24ded-a5ee-474b-b74b-7a61d15315b1.png" width="946" /></p>
+<p>The installer will finish setting up your system. Choose Reboot Now to reboot your computer.</p>
+<p><img height="145" src="/AutoUploads\d432b164-f2d7-4260-b6b6-303e6f34806b.png" width="934" /></p>
+<p>When your server boots back up enter your login info.</p>
+<p><img height="407" src="/AutoUploads\6647c729-068e-4bea-870f-1b7513197531.png" width="586" /></p>
+<p>The first thing we need to do is install those updates. Issue the following commands to do so:</p>
+<p><code>sudo apt-get update
+	<br />sudo apt-get upgrade
+	<br />sudo apt-get dist-upgrade
+	<br />sudo apt-get autoremove</code></p>
+<p>On each of these steps confirm yes when needed. Some of them might take a little while to finish.</p>
+<h2>Install Docker</h2>
+<p>The next step is to install Docker. There is a <a href="https://docs.docker.com/install/linux/docker-ce/ubuntu/">great guide</a> on the official Docker website, but you can follow the steps below. To install docker issue the following commands:</p>
+<p><code>sudo apt-get update
+	<br />sudo apt-get install apt-transport-https ca-certificates curl gnupg-agent software-properties-common
+	<br />curl -fsSL <a href="https://download.docker.com/linux/ubuntu/gpg">https://download.docker.com/linux/ubuntu/gpg</a> | sudo apt-key add -
+	<br />sudo add-apt-repository &quot;deb [arch=amd64] <a href="https://download.docker.com/linux/ubuntu">https://download.docker.com/linux/ubuntu</a> $(lsb_release -cs) stable&quot;
+	<br />sudo apt-get update
+	<br />sudo apt-get install docker-ce docker-ce-cli containerd.io</code></p>
+<p>Confirm any step that asks you to and, yes, you will run sudo apt-get update multiple times.</p>
+<p><img height="236" src="/AutoUploads\43973be9-9d37-4ad9-b3a3-1c266e98b610.png" width="1018" /></p>
+<p>When this is done test your docker install by running the hello-world image.</p>
+<p><code>sudo docker run hello-world</code></p>
+<p><img height="472" src="/AutoUploads\b0abe76f-016b-4706-85e4-475bea385616.png" width="647" /></p>

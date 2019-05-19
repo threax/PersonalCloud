@@ -1,0 +1,17 @@
+{
+  "name": "Root",
+  "children": [
+    {
+      "name": "Main Page",
+      "link": "/"
+    },
+    {
+      "name": "Getting Started",
+      "link": "/getting-started"
+    },
+    {
+      "name": "Server Setup - Linux with Docker",
+      "link": "/server-setup-linux-with-docker"
+    }
+  ]
+}
