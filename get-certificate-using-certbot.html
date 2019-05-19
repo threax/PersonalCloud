@@ -1,0 +1,40 @@
+<h1>Get Certificate Using Certbot</h1>
+<p>The next step is to get a certificate for your server using certbot. This will use the docker container in manual mode since that should work with any registrar.</p>
+<h2>Create a Certificate Storage Folder</h2>
+<p>In your home directory create a folder called config</p>
+<p><code>mkdir config
+	<br />cd config</code></p>
+<p>Next create a folder to hold your certbot data</p>
+<p><code>mkdir certbot-data</code></p>
+<h2>Get Certificate Using Certbot</h2>
+<p>Next run the certbot docker container setup to output to that folder.</p>
+<p><code>sudo docker run -it --rm -v ~/config/certbot-data:/etc/letsencrypt --name certbot certbot/certbot certonly --manual --server <a href="https://acme-v02.api.letsencrypt.org/directory">https://acme-v02.api.letsencrypt.org/directory</a> --preferred-challenges dns --agree-tos --manual-public-ip-logging-ok --no-eff-email --email <strong>EMAIL</strong> -d <strong>DOMAIN</strong></code></p>
+<p>You will need to replace EMAIL with your email and DOMAIN with your domain. You should request a wildcard cert, so DOMAIN should be something&nbsp;like&nbsp;*.yourdomain.tld.</p>
+<p>When you run this command the certbot image will be downloaded and run. Eventually you will see output like the following:</p>
+<p><img height="263" src="/AutoUploads\376dc4ec-2c8f-46b7-b529-c40ad6ebaa3a.png" width="724" /></p>
+<p>Do not press Enter until you have completed the following steps:</p>
+<p>First log into your registrar and go to the DNS settings. This is different for each one so please consult your registrar&#39;s documentation.</p>
+<p>Next create an TXT for the _acme-challenge.yourdomain.tld and paste in the value given. Some registrars use different formats here. In mine I would just enter _acme-challenge without the .yourdomain.tld part, that is included automatically. Again verify this with your registrar&#39;s documentation. Set the TTL (Time to Live) as short as possible in case you mess up you won&#39;t have to wait forever for another try.</p>
+<p>After this is done and saved still do not press enter in the terminal. First double check that you entered the record correctly by issuing the following command in another terminal</p>
+<p><code>dig -t txt _acme-challenge.yourdomain.tld +short</code></p>
+<p>If this command returns what the challenge specifies you can now press enter to finish getting your certificate. You should see output like the following:</p>
+<p><img height="365" src="/AutoUploads\dd492090-09f0-4212-863b-4e0f0844b2cd.png" width="721" /></p>
+<p>Note that because we ran this from a container our certificates are actually stored in ~/config/certbot-data not the paths shown above. However, everything after the /live directory is correct.</p>
+<p>At this point you can delete the challenge out of your dns settings on you registrar.</p>
+<h2>Create Docker Secrets from Certificates</h2>
+<p>The next step is to create docker secrets from these certificates. To do this run the following commands, be sure to replace DOMAIN with your domain, such as yourdomain.tld.</p>
+<p><code>sudo docker secret create public.pem ~/config/certbot-data/live/<strong>DOMAIN</strong>/fullchain.pem
+	<br />sudo docker secret create private.pem ~/config/certbot-data/live/<strong>DOMAIN</strong>/privkey.pem</code></p>
+<p>This will create the secrets inside the docker engine.</p>
+<p>This completes the initial certbot setup. You do not have to do the Renewing Certificates step below, that is for when your cert is about to expired and needs to be reissued.</p>
+<h1>Renewing Certificates</h1>
+<p>This step will not need to be done until you need to update your certificates. To do this do the following:</p>
+<p>Remove and recreate the certbot-data directory you created before.</p>
+<p>Follow the steps above under <strong>Get Certificate Using Certbot</strong>&nbsp;to put the challenge back into your registrar and renew the certs.</p>
+<p>If your nginx proxy is running stop it by running <code>docker stack rm nginx</code>.</p>
+<p>Remove and recreate the secrets from your new certificates.</p>
+<p><code>sudo docker secret rm public.pem
+	<br />sudo docker secret rm private.pem
+	<br />sudo docker secret create public.pem ~/config/certbot-data/live/DOMAIN/fullchain.pem
+	<br />sudo docker secret create private.pem ~/config/certbot-data/live/DOMAIN/privkey.pem</code></p>
+<p>Then start your nginx proxy back up. You should now be using the new versions of your certs.</p>

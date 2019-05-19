@@ -14,6 +14,10 @@
       "link": "/server-setup-linux-with-docker"
     },
     {
+      "name": "Get Certificate Using Certbot",
+      "link": "/get-certificate-using-certbot"
+    },
+    {
       "name": "Create Nginx Proxy",
       "link": "/create-nginx-proxy"
     }
