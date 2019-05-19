@@ -12,6 +12,10 @@
     {
       "name": "Server Setup - Linux with Docker",
       "link": "/server-setup-linux-with-docker"
+    },
+    {
+      "name": "Create Nginx Proxy",
+      "link": "/create-nginx-proxy"
     }
   ]
 }

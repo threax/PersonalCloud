@@ -1,0 +1,94 @@
+<h1>Create Nginx Proxy</h1>
+<p>We are going to run Nginx in a container as a proxy server. By following a convention in app naming its possible to configure this proxy only once and have it automatically connect to apps as you add them.</p>
+<h2>Setup Nginx Config</h2>
+<p>On your server create a folder called compose in your home directory.</p>
+<p><code>mkdir compose
+	<br />cd compose</code></p>
+<p>Then create a folder to hold your Nginx configuration.</p>
+<p><code>mkdir nginx
+	<br />cd nginx</code></p>
+<p>Create a file called nginx.conf and paste in the following:</p>
+<p><code>worker_processes 4;</code></p>
+<p><code>events { worker_connections 1024; }</code></p>
+<p>
+	<br /><code>http {
+	<br />&nbsp;&nbsp;&nbsp; # error_log stderr warn;</code></p>
+<p><code>&nbsp;&nbsp;&nbsp; sendfile on;
+	<br />&nbsp;&nbsp;&nbsp; server_tokens off;</code></p>
+<p><code>&nbsp;&nbsp;&nbsp; # Fix identityserver bad gateway errors
+	<br />&nbsp;&nbsp;&nbsp; proxy_buffer_size&nbsp;&nbsp; 128k;
+	<br />&nbsp;&nbsp;&nbsp; proxy_buffers&nbsp;&nbsp; 4 256k;
+	<br />&nbsp;&nbsp;&nbsp; proxy_busy_buffers_size&nbsp;&nbsp; 256k;
+	<br />&nbsp;&nbsp;&nbsp; large_client_header_buffers 4 16k;
+	<br />&nbsp;&nbsp;&nbsp;
+	<br />&nbsp;&nbsp;&nbsp; # Compression
+	<br />&nbsp;&nbsp;&nbsp; gzip on;
+	<br />&nbsp;&nbsp;&nbsp; gzip_types&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; application/javascript text/css;
+	<br />&nbsp;&nbsp;&nbsp; #gzip_proxied&nbsp;&nbsp;&nbsp; any; # The docs say you need this, but it doesnt do anything</code></p>
+<p><code>&nbsp;&nbsp;&nbsp; # Proxy Settings
+	<br />&nbsp;&nbsp;&nbsp; resolver 127.0.0.11 ipv6=off valid=30s;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; #docker embedded dns ip
+	<br />&nbsp;&nbsp;&nbsp; proxy_redirect&nbsp;&nbsp;&nbsp;&nbsp; off;
+	<br />&nbsp;&nbsp;&nbsp; proxy_set_header&nbsp;&nbsp; Host $host;
+	<br />&nbsp;&nbsp;&nbsp; proxy_set_header&nbsp;&nbsp; X-Real-IP $remote_addr;
+	<br />&nbsp;&nbsp;&nbsp; proxy_set_header&nbsp;&nbsp; X-Forwarded-For $proxy_add_x_forwarded_for;
+	<br />&nbsp;&nbsp;&nbsp; proxy_set_header&nbsp;&nbsp; X-Forwarded-Host $server_name;
+	<br />&nbsp;&nbsp;&nbsp; proxy_set_header&nbsp;&nbsp; X-Forwarded-Proto $scheme;
+	<br />&nbsp;&nbsp;&nbsp; proxy_set_header&nbsp;&nbsp; X-Forwarded-Port $server_port;</code></p>
+<p><code>&nbsp;&nbsp;&nbsp; # SSL Settings
+	<br />&nbsp;&nbsp;&nbsp; # <a href="https://mozilla.github.io/server-side-tls/ssl-config-generator/">https://mozilla.github.io/server-side-tls/ssl-config-generator/</a>
+	<br />&nbsp;&nbsp;&nbsp; # Based on modern
+	<br />&nbsp;&nbsp;&nbsp; ssl_protocols TLSv1.2;
+	<br />&nbsp;&nbsp;&nbsp; ssl_ciphers &#39;ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256&#39;;
+	<br />&nbsp;&nbsp;&nbsp; ssl_prefer_server_ciphers on;</code></p>
+<p><code>&nbsp;&nbsp;&nbsp; # match any subdomain and forward to docker named container
+	<br />&nbsp;&nbsp;&nbsp; server {
+	<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; listen 80;
+	<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; listen&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 443 ssl;
+	<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ssl_certificate&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /run/secrets/public.pem;
+	<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ssl_certificate_key&nbsp;&nbsp; /run/secrets/private.pem;</code></p>
+<p><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; server_name&nbsp; ~^(?&lt;appname&gt;.+)\.yourdomain\.tld$;</code></p>
+<p>
+	<br /><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; location / {
+	<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; proxy_pass&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a href="http://${appname}.appnet:5000">http://${appname}.appnet:5000</a>;&nbsp;&nbsp; #can add port here if needed
+	<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; proxy_http_version&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1.1;
+	<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; client_max_body_size&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0;
+	<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; # proxy_ssl_session_reuse on; # For ssl, set to https on proxy_pass and uncomment this
+	<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }
+	<br />&nbsp;&nbsp;&nbsp; }
+	<br />}</code></p>
+<p>Replace the line:</p>
+<p><code>server_name&nbsp; ~^(?&lt;appname&gt;.+)\.<strong>yourdomain</strong>\.<strong>tld</strong>$;</code></p>
+<p>with your custom domain. You can add a subdomain if you want. This is a regular expression, so prefix any . with a \.</p>
+<p>For example if your domain is personalcloud.com change this line to read:</p>
+<p><code>server_name&nbsp; ~^(?&lt;appname&gt;.+)\.personalcloud\.com$;</code></p>
+<p>Or if you want to use a subdomain of your domain:</p>
+<p><code>server_name&nbsp; ~^(?&lt;appname&gt;.+)\.apps\.personalcloud\.com$;</code></p>
+<p>This will setup a convention where the first part of your domain is matched against a container on the appnet network with that name. This way you don&#39;t have to keep coming back to this file to configure individual apps.</p>
+<p>You might also want to limit the client_max_body_size. This is set to 0 in the above config, which is unlimited.</p>
+<h2>Setup docker-compose.yml</h2>
+<p>Next create a file called docker-compose.yml and paste in the following contents:</p>
+<p><code>version: &quot;3.4&quot;</code></p>
+<p><code>services:
+	<br />&nbsp; app:
+	<br />&nbsp;&nbsp;&nbsp; image: nginx
+	<br />&nbsp;&nbsp;&nbsp; networks:
+	<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - appnet
+	<br />&nbsp;&nbsp;&nbsp; volumes:
+	<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - type: bind
+	<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; source: ./nginx.conf
+	<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; target: /etc/nginx/nginx.conf
+	<br />&nbsp;&nbsp;&nbsp; secrets:
+	<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - public.pem
+	<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - private.pem
+	<br />&nbsp;&nbsp;&nbsp; ports:
+	<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - &quot;80:80&quot;
+	<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - &quot;443:443&quot;</code></p>
+<p><code>networks:
+	<br />&nbsp; appnet:
+	<br />&nbsp;&nbsp;&nbsp; external: true</code></p>
+<p><code>secrets:
+	<br />&nbsp; public.pem:
+	<br />&nbsp;&nbsp;&nbsp; external: true
+	<br />&nbsp; private.pem:
+	<br />&nbsp;&nbsp;&nbsp; external: true</code></p>
+<p>This will setup the container to run the offical nginx image with the config file you just created.</p>
