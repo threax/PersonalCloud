@@ -27,6 +27,16 @@
 	<br />sudo apt-get dist-upgrade
 	<br />sudo apt-get autoremove</code></p>
 <p>On each of these steps confirm yes when needed. Some of them might take a little while to finish.</p>
+<h2>Setup Firewall with UFW</h2>
+<p>First enable the firewall on your system by running</p>
+<p><code>sudo ufw enable</code></p>
+<p>This will enable the firewall totally locked down.</p>
+<p>Then open the http and https ports</p>
+<p><code>sudo ufw allow http
+	<br />sudo ufw allow https</code></p>
+<p>If you want ssh access, open that port also. You can skip this if you did not install ssh when you installed your server.</p>
+<p><code>sudo ufw allow 22</code></p>
+<p><img height="207" src="/AutoUploads\96673c02-7299-4d57-a74d-76f6eee5b179.png" width="404" /></p>
 <h2>Install Docker</h2>
 <p>The next step is to install Docker. There is a <a href="https://docs.docker.com/install/linux/docker-ce/ubuntu/">great guide</a> on the official Docker website, but you can follow the steps below. To install docker issue the following commands:</p>
 <p><code>sudo apt-get update
@@ -40,3 +50,4 @@
 <p>When this is done test your docker install by running the hello-world image.</p>
 <p><code>sudo docker run hello-world</code></p>
 <p><img height="472" src="/AutoUploads\b0abe76f-016b-4706-85e4-475bea385616.png" width="647" /></p>
+<p>This completes the setup of the host server itself. From here on out we will be using docker images to manage the rest of the pieces of the infrastructure.</p>
