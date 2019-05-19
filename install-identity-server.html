@@ -84,7 +84,17 @@
 <p><code>sudo docker secret create id.signingcert.p12 id.signingcert.p12</code></p>
 <p>You can then erase the id.signingcert.p12 file since it is now a docker secret.</p>
 <p>Next migrate and seed the database.</p>
-<p><code>sudo docker run -v /data/app/id:/appdata threax-id-linux-amd64 tools migrate seed</code></p>
+<p><code>sudo docker run -v /data/app/id:/appdata --user 19999&nbsp;threax-id-linux-amd64 tools migrate seed</code></p>
 <p>Finally build and deploy the id server.</p>
 <p><code>sudo docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd):/data threax/stack-deploy -build</code></p>
-<p>The id server should now be running.</p>
+<p>The id server should now be running. Add id.yourdomain.tld to your dns settings and you should be able to visit it in your browser.</p>
+<p><img height="483" src="/AutoUploads\f82eef42-cdbd-4c53-b495-2e513aa82169.png" width="955" /></p>
+<h2>Register an Account</h2>
+<p>The next step is to register an admin account. You should use a separate admin account from the main account that you want to use normally. This way you aren&#39;t a full blown admin in your system when you are using it day to day. Click the register link and enter the requested account information. For your admin account you should use something like admin@yourdomain.tld.</p>
+<p>Once you create your account click the menu with your admin&#39;s e-mail address and copy the User Id this page shows.</p>
+<p><img height="566" src="/AutoUploads\ebbc4ac9-9b87-4b76-8be2-f438143066a5.png" width="1017" /></p>
+<p>This user id will be used to register the admin in any apps you install. It will be referred to as the <strong>admin user id</strong>.</p>
+<h2>Make&nbsp;the Admin Account an Admin in the Identity Server</h2>
+<p>The last step is to make your admin account an actual admin in the id server. To do this run the following command. Be sure to replace <strong>AdminUserId</strong> with the admin user id you copied above.</p>
+<p><code>sudo docker run -v /data/app/id:/appdata --user 19999 threax-id-linux-amd64 tools &quot;addadmin <strong>AdminUserId</strong>&quot;</code></p>
+<p>Your account will now be an admin in the id server. The id server itself does not have an interface to manage apps. You will install the App Dashboard next, which will allow you to manage the apps connected to the id server.</p>
