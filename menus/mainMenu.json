@@ -2,7 +2,7 @@
   "name": "Root",
   "children": [
     {
-      "name": "Main Page",
+      "name": "Introduction",
       "link": "/"
     },
     {
