@@ -3,17 +3,17 @@
 <h2>Create Data Folder</h2>
 <p>The Identity Server needs to be able to write a sqlite database to your system. To do this we will create a folder on the server to hold this data.</p>
 <p>Run the following commands:</p>
-<p>sudo mkdir /data
+<p><code>sudo mkdir /data
 	<br />sudo mkdir /data/app
 	<br />sudo mkdir /data/app/id
 	<br />sudo chown -R 19999:19999&nbsp;/data/app/id
-	<br />sudo chmod 700 /data/app/id</p>
+	<br />sudo chmod 700 /data/app/id</code></p>
 <p>That will create a folder /data/app/id that is owned by user 19999. That user will be used to run the docker container and it will be able to write to this folder.</p>
 <h2>Create Configuration File</h2>
 <p>First create a directory in your compose folder called id.</p>
-<p>cd ~/compose
-	<br />mkdir id</p>
-<p>Next paste in the following configuration. You will need to replace <strong>DOMAIN</strong> with your domain.</p>
+<p><code>cd ~/compose
+	<br />mkdir id</code></p>
+<p>Next paste in the following configuration into a file called docker-compose.json. You will need to replace <strong>DOMAIN</strong> with your domain.</p>
 <p><code>{
 	<br />&nbsp;&nbsp;&nbsp; &quot;stack&quot;: &quot;id&quot;,
 	<br />&nbsp;&nbsp;&nbsp; &quot;secrets&quot;: {
@@ -25,7 +25,6 @@
 	<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &quot;Authority&quot;: &quot;<a href="https://id.DOMAIN">https://id.<strong>DOMAIN</strong></a>&quot;
 	<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; },
 	<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &quot;AppConfig&quot;: {
-	<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &quot;AppDashboardHost&quot;: &quot;appdashboard.<strong>DOMAIN</strong>&quot;,
 	<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &quot;FrameAncestors&quot;: [
 	<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &quot;<a href="https://*.DOMAIN">https://*.<strong>DOMAIN</strong></a>&quot;
 	<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ]
@@ -79,12 +78,14 @@
 <p><code>sudo docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd):/data threax/stack-deploy -build -nodeploy</code></p>
 <p>Wait while the images and code are pulled and the program is built.</p>
 <p>Next the following command to create a signing certificate to use to sign tokens coming from the id server.</p>
-<p><code>sudo docker run -v $(pwd):/out threax-id-linux-amd64 tools &quot;createCert signing 100 /out/id.signingcert.p12&quot;</code></p>
+<p><code>sudo docker run --rm&nbsp;-v $(pwd):/out threax-id-linux-amd64 tools &quot;createCert signing 100 /out/id.signingcert.p12&quot;</code></p>
 <p>Then create a secret out of this file.</p>
 <p><code>sudo docker secret create id.signingcert.p12 id.signingcert.p12</code></p>
 <p>You can then erase the id.signingcert.p12 file since it is now a docker secret.</p>
 <p>Next migrate and seed the database.</p>
-<p><code>sudo docker run -v /data/app/id:/appdata --user 19999&nbsp;threax-id-linux-amd64 tools migrate seed</code></p>
+<p><code>sudo docker run --rm&nbsp;-v /data/app/id:/appdata --user 19999&nbsp;threax-id-linux-amd64 tools migrate seed</code></p>
+<p>Next setup the app dashboard host. Replace <strong>DOMAIN</strong> with your domain.</p>
+<p><code>sudo docker run --rm -v /data/app/id:/appdata --user 19999 threax-id-linux-amd64 tools &quot;setupAppDashboard appdashboard.<strong>DOMAIN</strong>&quot;</code></p>
 <p>Finally build and deploy the id server.</p>
 <p><code>sudo docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd):/data threax/stack-deploy -build</code></p>
 <p>The id server should now be running. Add id.yourdomain.tld to your dns settings and you should be able to visit it in your browser.</p>
@@ -96,5 +97,5 @@
 <p>This user id will be used to register the admin in any apps you install. It will be referred to as the <strong>admin user id</strong>.</p>
 <h2>Make&nbsp;the Admin Account an Admin in the Identity Server</h2>
 <p>The last step is to make your admin account an actual admin in the id server. To do this run the following command. Be sure to replace <strong>AdminUserId</strong> with the admin user id you copied above.</p>
-<p><code>sudo docker run -v /data/app/id:/appdata --user 19999 threax-id-linux-amd64 tools &quot;addadmin <strong>AdminUserId</strong>&quot;</code></p>
+<p><code>sudo docker run --rm&nbsp;-v /data/app/id:/appdata --user 19999 threax-id-linux-amd64 tools &quot;addadmin <strong>AdminUserId</strong>&quot;</code></p>
 <p>Your account will now be an admin in the id server. The id server itself does not have an interface to manage apps. You will install the App Dashboard next, which will allow you to manage the apps connected to the id server.</p>

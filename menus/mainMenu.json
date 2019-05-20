@@ -24,6 +24,10 @@
     {
       "name": "Install Identity Server",
       "link": "/install-identity-server"
+    },
+    {
+      "name": "Install App Dashboard",
+      "link": "/install-app-dashboard"
     }
   ]
 }
