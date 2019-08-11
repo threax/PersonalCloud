@@ -1,31 +1,91 @@
-<h1>Server Setup - Linux with Docker</h1>
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Server Setup - Linux with Docker</title>
+    <link rel="stylesheet" href="/PersonalCloud/lib/bootstrap/dist/css/bootstrap-custom.css?linkver=20190811023011" type="text/css">
+<link rel="stylesheet" href="/PersonalCloud/lib/sidebar/css/simple-sidebar.css?linkver=20190811023011" type="text/css">
+<link rel="stylesheet" href="/PersonalCloud/lib/sidebar/css/sidemenu.css?linkver=20190811023011" type="text/css">
+<link rel="stylesheet" href="/PersonalCloud/lib/edity/css/layout.css?linkver=20190811023011" type="text/css">
+
+</head>
+
+<body>
+    <nav class="navbar navbar-inverse navbar-fixed-top navbar-nomargin" data-hr-run="edity.theme.layouts.default">
+        <a class="navbar-brand" href="#ToggleMenu" data-target="#wrapper" data-toggle="sidebar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="glyphicon glyphicon-menu-hamburger"></span>
+        </a>
+        <div class="navbar-header navbar-nowrap">
+            <a class="navbar-brand" href="/PersonalCloud/">Threax Personal Cloud</a>
+        </div>
+    </nav>
+
+    <div class="navbar-shadow-short"></div>
+    <div class="navbar-spacer-short"></div>
+
+    <div id="wrapper">
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper" class="sidebar-with-navbar-short">
+            <div class="mainTreeMenu" data-hr-controller="treeMenu" data-hr-config-urlroot="/PersonalCloud/" data-hr-config-menu="/PersonalCloud/menus/mainMenu.json" data-hr-config-scrollelement="#sidebar-wrapper" data-hr-model-component="sidebarMenuComponent" data-hr-config-treemenu-version="58EF8CA273E2D889CF48A5A28F7FBF77CC5D1CC879FD383046C42776EBA076C4">
+                <ul class="sidebarMenu" data-hr-model="childItems" data-hr-model-component="sidebarMenuComponent">
+                    <template data-hr-component="sidebarMenuComponent">
+                        <li class="folder">
+                            <div class="item" data-hr-on-click="toggleMenuItem" data-hr-toggle="current" data-hr-class-on="currentFolder"><span data-hr-toggle="children" class="glyphicon" data-hr-class-on="glyphicon-folder-open" data-hr-class-off="glyphicon-folder-close"></span> {{name}}</div>
+                            <div class="children" data-hr-model="children" data-hr-model-component="sidebarMenuComponent" data-hr-toggle="children" data-hr-class-on="expanded" data-hr-style-off="display:none;"></div>
+                        </li>
+                    </template>
+                    <template data-hr-variant="link">
+                        <li class="link">
+                            <a href="{{urlRoot}}{{link}}" target="{{target}}">
+                                <div class="mainBlock" data-hr-toggle="current" data-hr-class-on="currentLink">
+                                    {{name}}
+                                </div>
+                            </a>
+                        </li>
+                    </template>
+                    <template data-hr-variant="root">
+                        <div class="children" data-hr-model="children" data-hr-model-component="sidebarMenuComponent" data-hr-toggle="children" data-hr-class-on="expanded" data-hr-style-off="display:none;"></div>
+                    </template>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12 pageContent">
+                        <h1>Server Setup - Linux with Docker</h1>
 <p>This page describes how to setup your app server using Docker on Linux. This guide will use Ubuntu Server, but if you prefer another Linux flavor go ahead and use that. Some steps may be different if you choose to go that route.</p>
 <h2>Download and Install Ubuntu Server</h2>
 <p>Grab an <a href="https://www.ubuntu.com/#download">Ubuntu Server</a> and install it on your target PC. I reccomend going with the current LTS (Long Term Support) release.</p>
-<p><img height="679" src="/AutoUploads\2eca6bc9-ceea-4521-91cc-1eed3ff987b4.png" width="714" /></p>
+<p><img height="679" src="/PersonalCloud/AutoUploads\2eca6bc9-ceea-4521-91cc-1eed3ff987b4.png" width="714"></p>
 <p>Folllow through the installer. For the most part the default settings are ok.</p>
-<p><img height="506" src="/AutoUploads\3b717852-f2f9-4763-a148-5af094ea51d0.png" width="674" /></p>
+<p><img height="506" src="/PersonalCloud/AutoUploads\3b717852-f2f9-4763-a148-5af094ea51d0.png" width="674"></p>
 <p>Choose your language and&nbsp;keyboard settings and choose the plain Install Ubuntu option.</p>
-<p><img height="173" src="/AutoUploads\4fb42349-049d-4196-9c7c-8975777d2000.png" width="933" /></p>
+<p><img height="173" src="/PersonalCloud/AutoUploads\4fb42349-049d-4196-9c7c-8975777d2000.png" width="933"></p>
 <p>Configure your network connection, it is probably enough to just choose Done.</p>
 <p>On the next page if you have a proxy configure that or just select Done.</p>
 <p>On the next page the default Ubuntu archive mirror should work, so choose Done to move on.</p>
 <p>Partition your disk to your preference. Choosing Use An Entire Disk is a good option. On the next page choose the disk you want to format. On the final Filesystem setup page choose Done and Continue in the popup screen to confirm the changes.</p>
 <p>On the next page enter your profile information. If you can&#39;t think of a server name use AppServer.</p>
-<p><img height="345" src="/AutoUploads\cadc60e9-5df7-4363-8ab8-8464999b8443.png" width="957" /></p>
+<p><img height="345" src="/PersonalCloud/AutoUploads\cadc60e9-5df7-4363-8ab8-8464999b8443.png" width="957"></p>
 <p>On the next screen if you want to remotely access your server&nbsp;choose the option to Install OpenSSH server. Press spacebar to select this option then press down and choose Done.</p>
-<p><img height="276" src="/AutoUploads\767f7f90-e062-485f-88f0-61093a03135d.png" width="821" /></p>
+<p><img height="276" src="/PersonalCloud/AutoUploads\767f7f90-e062-485f-88f0-61093a03135d.png" width="821"></p>
 <p>On the Featured Server Snaps page don&#39;t install anything just select Done.</p>
-<p><img height="466" src="/AutoUploads\bcc24ded-a5ee-474b-b74b-7a61d15315b1.png" width="946" /></p>
+<p><img height="466" src="/PersonalCloud/AutoUploads\bcc24ded-a5ee-474b-b74b-7a61d15315b1.png" width="946"></p>
 <p>The installer will finish setting up your system. Choose Reboot Now to reboot your computer.</p>
-<p><img height="145" src="/AutoUploads\d432b164-f2d7-4260-b6b6-303e6f34806b.png" width="934" /></p>
+<p><img height="145" src="/PersonalCloud/AutoUploads\d432b164-f2d7-4260-b6b6-303e6f34806b.png" width="934"></p>
 <p>When your server boots back up enter your login info.</p>
-<p><img height="407" src="/AutoUploads\6647c729-068e-4bea-870f-1b7513197531.png" width="586" /></p>
+<p><img height="407" src="/PersonalCloud/AutoUploads\6647c729-068e-4bea-870f-1b7513197531.png" width="586"></p>
 <p>The first thing we need to do is install those updates. Issue the following commands to do so:</p>
 <p><code>sudo apt-get update
-	<br />sudo apt-get upgrade
-	<br />sudo apt-get dist-upgrade
-	<br />sudo apt-get autoremove</code></p>
+	<br>sudo apt-get upgrade
+	<br>sudo apt-get dist-upgrade
+	<br>sudo apt-get autoremove</code></p>
 <p>On each of these steps confirm yes when needed. Some of them might take a little while to finish.</p>
 <h2>Setup Firewall with UFW</h2>
 <p>First enable the firewall on your system by running</p>
@@ -33,25 +93,42 @@
 <p>This will enable the firewall totally locked down.</p>
 <p>Then open the http and https ports</p>
 <p><code>sudo ufw allow http
-	<br />sudo ufw allow https</code></p>
+	<br>sudo ufw allow https</code></p>
 <p>If you want ssh access, open that port also. You can skip this if you did not install ssh when you installed your server.</p>
 <p><code>sudo ufw allow 22</code></p>
-<p><img height="207" src="/AutoUploads\96673c02-7299-4d57-a74d-76f6eee5b179.png" width="404" /></p>
+<p><img height="207" src="/PersonalCloud/AutoUploads\96673c02-7299-4d57-a74d-76f6eee5b179.png" width="404"></p>
 <h2>Install Docker</h2>
 <p>The next step is to install Docker. There is a <a href="https://docs.docker.com/install/linux/docker-ce/ubuntu/">great guide</a> on the official Docker website, but you can follow the steps below. To install docker issue the following commands:</p>
 <p><code>sudo apt-get update
-	<br />sudo apt-get install apt-transport-https ca-certificates curl gnupg-agent software-properties-common
-	<br />curl -fsSL <a href="https://download.docker.com/linux/ubuntu/gpg">https://download.docker.com/linux/ubuntu/gpg</a> | sudo apt-key add -
-	<br />sudo add-apt-repository &quot;deb [arch=amd64] <a href="https://download.docker.com/linux/ubuntu">https://download.docker.com/linux/ubuntu</a> $(lsb_release -cs) stable&quot;
-	<br />sudo apt-get update
-	<br />sudo apt-get install docker-ce docker-ce-cli containerd.io</code></p>
+	<br>sudo apt-get install apt-transport-https ca-certificates curl gnupg-agent software-properties-common
+	<br>curl -fsSL <a href="https://download.docker.com/linux/ubuntu/gpg">https://download.docker.com/linux/ubuntu/gpg</a> | sudo apt-key add -
+	<br>sudo add-apt-repository &quot;deb [arch=amd64] <a href="https://download.docker.com/linux/ubuntu">https://download.docker.com/linux/ubuntu</a> $(lsb_release -cs) stable&quot;
+	<br>sudo apt-get update
+	<br>sudo apt-get install docker-ce docker-ce-cli containerd.io</code></p>
 <p>Confirm any step that asks you to and, yes, you will run sudo apt-get update multiple times.</p>
-<p><img height="236" src="/AutoUploads\43973be9-9d37-4ad9-b3a3-1c266e98b610.png" width="1018" /></p>
+<p><img height="236" src="/PersonalCloud/AutoUploads\43973be9-9d37-4ad9-b3a3-1c266e98b610.png" width="1018"></p>
 <p>When this is done test your docker install by running the hello-world image.</p>
 <p><code>sudo docker run hello-world</code></p>
-<p><img height="472" src="/AutoUploads\b0abe76f-016b-4706-85e4-475bea385616.png" width="647" /></p>
+<p><img height="472" src="/PersonalCloud/AutoUploads\b0abe76f-016b-4706-85e4-475bea385616.png" width="647"></p>
 <p>Next put your docker server into swarm mode by running</p>
 <p><code>sudo docker swarm init</code></p>
 <p>Next&nbsp;you should create an overlay network called appnet. This is the network your individual docker containers will use to communicate with one another.</p>
 <p><code>sudo docker network create -d overlay --attachable appnet</code></p>
 <p>This completes the setup of the host server itself. From here on out we will be using docker images to manage the rest of the pieces of the infrastructure.</p>
+                        <div class="footer"></div>
+                    </div>
+                </div>
+                <div class="footer-padding"></div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript" src="/PersonalCloud/lib/polyfill.js?linkver=20190811023011"></script>
+<script type="text/javascript" src="/PersonalCloud/lib/tslib.js?linkver=20190811023011"></script>
+<script type="text/javascript" src="/PersonalCloud/lib/jquery/dist/jquery.min.js?linkver=20190811023011"></script>
+<script type="text/javascript" src="/PersonalCloud/lib/bootstrap/dist/js/bootstrap.min.js?linkver=20190811023011"></script>
+<script type="text/javascript" src="/PersonalCloud/lib/tsbin.prod.js?linkver=20190811023011"></script>
+<script type="text/javascript" src="/PersonalCloud/lib/hr-run.js?linkver=20190811023011"></script>
+
+</body>
+
+</html>
